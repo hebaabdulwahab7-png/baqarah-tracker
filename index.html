@@ -1,938 +1,664 @@
+```html
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>وِردي اليومي – سورة البقرة</title>
-    <meta name="theme-color" content="#3a5a40">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Canvas Confetti for Celebration -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            green: '#2d6a4f',
+                            darkGreen: '#1b4332',
+                            lightGreen: '#d8f3dc',
+                            beige: '#fdfbf7',
+                            cardBeige: '#f4efe6',
+                            accentGold: '#d4af37'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
     <style>
-        :root {
-            --primary: #3a5a40;
-            --secondary: #a3b18b;
-            --bg-light: #fefae0;
-            --text-dark: #344e41;
-            --accent: #d4af37;
-            --font-family: 'Cairo', 'Amiri', sans-serif;
-        }
-
         body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            font-family: var(--font-family);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding-bottom: 20px;
+            background-color: #fdfbf7;
+            color: #2b2b2b;
+            font-family: 'Cairo', sans-serif;
+            -webkit-tap-highlight-color: transparent;
         }
-
-        header {
-            background-color: var(--primary);
-            color: white;
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 1.8rem;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 500px;
-            margin-top: 20px;
-        }
-
-        .stats {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .progress-bar {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 15px;
-            width: 60%;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            background: var(--primary);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease-in-out;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
         .day-card {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-
-        .day-card.completed {
-            background-color: var(--secondary);
-            color: white;
+        .day-card:active {
+            transform: scale(0.95);
         }
-
-        .day-card.completed .day-number, 
-        .day-card.completed .checkbox {
-            color: white;
+        /* Custom scrollbar for modern feel */
+        ::-webkit-scrollbar {
+            width: 6px;
         }
-
-        .day-number {
-            font-weight: bold;
-            font-size: 1.1rem;
+        ::-webkit-scrollbar-track {
+            background: #fdfbf7;
         }
-
-        .checkbox {
-            width: 25px;
-            height: 25px;
-            border: 2px solid var(--primary);
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: white;
+        ::-webkit-scrollbar-thumb {
+            background: #2d6a4f;
+            border-radius: 4px;
         }
-
-        .checkbox::after {
-            content: '✓';
-            color: var(--primary);
-            display: none;
-        }
-
-        .day-card.completed .checkbox::after {
-            display: block;
-        }
-        
-        .day-card.completed .checkbox {
-            border-color: white;
-        }
-
-        .notification-settings {
-            margin-top: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            background-color: var(--accent);
-            color: var(--text-dark);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.2s;
-            width: 100%;
-        }
-        
-        .btn-reset {
-            background-color: #d90429;
-            color: white;
-            width: 100%;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-            transform: scale(0.8);
-            transition: transform 0.3s;
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-
-        .close-modal {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 10px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .time-picker {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-            align-items: center;
-        }
-        input, select {
-            border: 1px solid var(--secondary);
-            border-radius: 5px;
-            padding: 5px;
-            font-family: var(--font-family);
-        }
-
     </style>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
 </head>
-<body>
+<body class="min-h-screen flex flex-col justify-between pb-10">
 
-    <header>
-        <h1>وِردي اليومي – سورة البقرة</h1>
+    <!-- Header & Title -->
+    <header class="bg-brand-green text-white shadow-md sticky top-0 z-30">
+        <div class="max-w-md mx-auto px-4 py-4 text-center flex items-center justify-between">
+            <h1 class="text-xl md:text-2xl font-bold tracking-wide mx-auto flex items-center gap-2">
+                📖 وِردي اليومي – سورة البقرة
+            </h1>
+        </div>
     </header>
 
-    <div class="container">
-        <div class="stats">
-            <div>
-                <span>المكتمل: <span id="completed-count">0</span> / 30</span>
+    <!-- Main Container -->
+    <main class="max-w-md mx-auto w-full px-4 pt-6 space-y-6 flex-grow">
+
+        <!-- Progress Card -->
+        <section class="bg-brand-cardBeige border border-brand-green/20 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex justify-between items-center text-brand-darkGreen font-bold">
+                <span class="text-base">المكتمل:</span>
+                <span id="progress-text" class="text-lg bg-white px-3 py-1 rounded-full shadow-inner border border-brand-green/10">0 / 30</span>
             </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
+            <!-- Progress Bar -->
+            <div class="w-full bg-stone-200 rounded-full h-4 overflow-hidden p-0.5 border border-stone-300">
+                <div id="progress-bar" class="bg-brand-green h-full rounded-full transition-all duration-500 ease-out w-0"></div>
             </div>
+        </section>
+
+        <!-- Notification Setting Card -->
+        <section class="bg-brand-cardBeige border border-brand-green/20 rounded-2xl p-5 shadow-sm space-y-3">
+            <div class="flex items-center gap-2 text-brand-darkGreen font-bold text-base">
+                <span>⏰</span>
+                <h2>ضبط التذكير اليومي:</h2>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <input type="time" id="reminder-time" value="08:00" class="flex-1 bg-white border border-stone-300 rounded-xl px-3 py-2 text-center text-lg font-bold text-stone-800 shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-green">
+                <button id="toggle-reminder-btn" onclick="toggleReminder()" class="bg-brand-green hover:bg-brand-darkGreen text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all active:scale-95">
+                    تفعيل
+                </button>
+            </div>
+            
+            <p id="notification-info" class="text-xs text-stone-600 bg-white/60 p-2.5 rounded-xl border border-stone-200 leading-relaxed">
+                ℹ️ تنبيه: تعمل الإشعارات أثناء فتح المتصفح أو عمله في الخلفية. يتطلب ذلك السماح بالإشعارات في هاتفك.
+            </p>
+        </section>
+
+        <!-- Reset Button Bar -->
+        <div class="flex justify-center">
+            <button onclick="confirmResetCurrent()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm px-6 py-2.5 rounded-xl shadow-sm hover:shadow transition-all flex items-center gap-2 active:scale-95">
+                <span>🔄</span>
+                <span>إعادة بدء التحدي</span>
+            </button>
         </div>
 
-        <div class="grid" id="days-grid">
-            <!-- سيتم إنشاء الأيام هنا بواسطة JavaScript -->
-        </div>
-
-        <div class="notification-settings" dir="rtl">
-            <label for="reminder-time">⏰ ضبط التذكير اليومي:</label>
-            <div class="time-picker">
-                <input type="time" id="reminder-time" value="20:00">
-                <button class="btn" style="width: auto; margin-top:0;" onclick="setupReminder()">تفعيل</button>
+        <!-- Days Grid (1 to 30) -->
+        <section class="space-y-2">
+            <h3 class="text-sm font-bold text-stone-600 px-1">جدول الأيام (30 يوم):</h3>
+            <div id="days-grid" class="grid grid-cols-3 gap-3">
+                <!-- Dynamically generated 30 days -->
             </div>
-            <p style="font-size: 0.8rem; color: #666; margin-top:10px;">(قد تحتاج إلى منح إذن للإشعارات على هاتفك)</p>
-        </div>
+        </section>
 
-        <button class="btn btn-reset" style="margin-top: 20px" onclick="resetChallenge()">🔄 إعادة بدء التحدي</button>
+        <!-- Backup & Restore Section -->
+        <section class="bg-brand-cardBeige border border-brand-green/20 rounded-2xl p-5 shadow-sm space-y-3">
+            <h3 class="text-sm font-bold text-brand-darkGreen flex items-center gap-2">
+                <span>💾</span>
+                <span>النسخ الاحتياطي واستعادة البيانات</span>
+            </h3>
+            <div class="grid grid-cols-2 gap-3 text-xs font-bold">
+                <button onclick="exportData()" class="bg-white border border-brand-green text-brand-green hover:bg-brand-lightGreen p-3 rounded-xl shadow-sm text-center transition-all flex items-center justify-center gap-1 active:scale-95">
+                    <span>📥</span> تصدير نسخة (JSON)
+                </button>
+                <label class="bg-white border border-stone-400 text-stone-700 hover:bg-stone-100 p-3 rounded-xl shadow-sm text-center transition-all flex items-center justify-center gap-1 cursor-pointer active:scale-95">
+                    <span>📤</span> استيراد نسخة
+                    <input type="file" id="import-file" accept=".json" class="hidden" onchange="importData(event)">
+                </label>
+            </div>
+        </section>
+
+        <!-- Challenge History Section -->
+        <section class="bg-brand-cardBeige border border-brand-green/20 rounded-2xl p-5 shadow-sm space-y-3">
+            <h3 class="text-sm font-bold text-brand-darkGreen flex items-center gap-2">
+                <span>🏆</span>
+                <span>سجل الإنجازات المكتملة</span>
+            </h3>
+            <div id="history-list" class="space-y-2 text-sm">
+                <!-- History Items -->
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Modal Message Container -->
+    <div id="custom-modal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-white rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4 border-2 border-brand-green/20 transform scale-95 transition-transform duration-300" id="modal-box">
+            <div id="modal-icon" class="text-5xl">✨</div>
+            <h3 id="modal-title" class="text-xl font-bold text-brand-darkGreen"></h3>
+            <p id="modal-body" class="text-sm text-stone-600 leading-relaxed"></p>
+            <div id="modal-actions" class="pt-2 flex justify-center gap-3">
+                <button onclick="closeModal()" class="bg-brand-green text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-brand-darkGreen transition-all w-full">
+                    حسناً
+                </button>
+            </div>
+        </div>
     </div>
 
-    <div class="modal" id="message-modal">
-        <div class="modal-content">
-            <h2 id="modal-title">تهانينا!</h2>
-            <p id="modal-text">رسالة تشجيعية هنا</p>
-            <button class="close-modal" onclick="closeModal()">حسناً</button>
+    <!-- Celebration Modal (30 Days Completed) -->
+    <div id="completion-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-300">
+        <div class="bg-brand-beige border-2 border-brand-accentGold rounded-3xl max-w-sm w-full p-6 text-center shadow-2xl space-y-4 transform scale-95 transition-transform duration-300" id="completion-box">
+            <div class="text-6xl animate-bounce">🎉</div>
+            <h2 class="text-2xl font-black text-brand-green">أحسنتِ! مبارك الختمة</h2>
+            <p class="text-stone-700 text-sm leading-relaxed">
+                ما شاء الله! أتممتِ قراءة سورة البقرة خلال 30 يوماً بنجاح. نفعكِ الله بها وجعلها حجة لكِ.
+            </p>
+            <div class="bg-white/80 p-3 rounded-xl border border-stone-200 text-xs text-stone-600 font-bold" id="completion-date-text">
+                تاريخ الإكمال: --
+            </div>
+            <div class="space-y-2 pt-2">
+                <button onclick="startNewCycle()" class="w-full bg-brand-green hover:bg-brand-darkGreen text-white font-bold py-3 rounded-xl shadow-lg transition-all active:scale-95">
+                    🌟 بدء تحدٍ جديد (دورة جديدة)
+                </button>
+                <button onclick="closeCompletionModal()" class="w-full bg-stone-200 text-stone-700 font-bold py-2.5 rounded-xl transition-all">
+                    إغلاق ومراجعة الأيام
+                </button>
+            </div>
         </div>
     </div>
 
+    <!-- Application JavaScript Logic -->
     <script>
-        const totalDays = 30;
-        const daysGrid = document.getElementById('days-grid');
-        const completedCountEl = document.getElementById('completed-count');
-        const progressFillEl = document.getElementById('progress-fill');
-        const modal = document.getElementById('message-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalText = document.getElementById('modal-text');
+        // Storage Keys - Preserving legacy key names for full backward compatibility
+        const LEGACY_KEYS = ['baqarah_days', 'completedDays', 'days', 'baqarah_tracker_data'];
+        const STORAGE_KEY_CURRENT = 'baqarah_current_days';
+        const STORAGE_KEY_HISTORY = 'baqarah_history_log';
+        const STORAGE_KEY_REMINDER = 'baqarah_reminder_settings';
 
-        const messages = [
-            'ما شاء الله! خطوة مباركة نحو النور. استمر.',
-            'بارك الله فيك! وردك اليومي يرفع همتك.',
-            'رائع! اقتربت خطوة جديدة من الختمة.',
-            'يا بطل! واصل ولا تنقطع، القرآن ربيع قلبك.',
-            'ممتاز! استشعر عظمة ما تقرأ اليوم.',
-            'أحسنت! خطواتك في سورة البقرة تضيء حياتك.',
-            'نور على نور! يوم إضافي وبداية جديدة.',
-            'ما أجمل التزامك! الله يتقبل منك.',
-            'همة عالية! لا تتوقف فالأجر عظيم.',
-            'استمر يا بطل! البقرة بركة في الرزق والوقت.',
-            'تبارك الله! قارئ القرآن في عليين.',
-            'عمل عظيم! أتممت اليوم، فافرح بإنجازك.',
-            'شكر الله سعيك! تذكر أن لكل حرف حسنة.',
-            'بداية قوية ليوم جديد! واصل المسير.',
-            'نصف الطريق تقريباً! أنت في حفظ الله.',
-            'إنجاز رائع! داوم على هذا النور.',
-            'عزيمة لا تلين! استمر في قراءة الوِرد.',
-            'زادك الله نوراً! وفقك الله لكل خير.',
-            'أنت رائع! كل يوم يمر يقربك من هدفك.',
-            'ما شاء الله! استمر في جني الحسنات.',
-            'خطوات مباركة! طهر قلبك بالقرآن.',
-            'همة المؤمن لا تفتر! أحسنت اليوم.',
-            'البقرة فسطاط القرآن! واصل الالتزام.',
-            'وفقك الله! كل يوم تقرأه هو كنز لك.',
-            'أوشكت على النهاية! استعد للنصر.',
-            'قارب التحدي على الانتهاء! استمر.',
-            'فخور بالتزامك! واصل حتى الختام.',
-            'أيام قليلة وتختم التحدي! ثابر.',
-            'ما أروع إنجازك! يوم واحد يفصلك.',
-            'مبارك! أتممت الختمة بفضل الله وتوفيقه!'
-        ];
-
-        function createDays() {
-            daysGrid.innerHTML = '';
-            for (let i = 1; i <= totalDays; i++) {
-                const dayCard = document.createElement('div');
-                dayCard.classList.add('day-card');
-                dayCard.id = `day-${i}`;
-                dayCard.innerHTML = `
-                    <div class="day-number">اليوم ${i}</div>
-                    <div class="checkbox" onclick="toggleDay(${i})"></div>
-                `;
-                daysGrid.appendChild(dayCard);
+        let state = {
+            completedDays: [], // Array of numbers e.g. [1, 2, 5]
+            history: [],       // Array of completed cycles: [{ id, completionDate, daysCount: 30 }]
+            reminder: {
+                enabled: false,
+                time: "08:00"
             }
-            loadProgress();
-        }
+        };
 
-        function toggleDay(day) {
-            const dayCard = document.getElementById(`day-${day}`);
-            dayCard.classList.toggle('completed');
-            saveProgress();
+        let reminderInterval = null;
 
-            if (dayCard.classList.contains('completed')) {
-                showModal(day);
+        // Initialize App
+        window.addEventListener('DOMContentLoaded', () => {
+            migrateAndLoadData();
+            renderDaysGrid();
+            updateUI();
+            initReminder();
+            setupNotifications();
+        });
+
+        // Safe Data Migration and Loading
+        function migrateAndLoadData() {
+            let loadedDays = new Set();
+
+            // 1. Check primary current key
+            const currentSaved = localStorage.getItem(STORAGE_KEY_CURRENT);
+            if (currentSaved) {
+                try {
+                    const parsed = JSON.parse(currentSaved);
+                    if (Array.isArray(parsed)) parsed.forEach(d => loadedDays.add(Number(d)));
+                } catch(e) {}
             }
-        }
 
-        function saveProgress() {
-            const completedDays = [];
-            document.querySelectorAll('.day-card').forEach((card, index) => {
-                if (card.classList.contains('completed')) {
-                    completedDays.push(index + 1);
+            // 2. Scan and migrate legacy keys safely
+            LEGACY_KEYS.forEach(key => {
+                const legacyData = localStorage.getItem(key);
+                if (legacyData) {
+                    try {
+                        const parsed = JSON.parse(legacyData);
+                        if (Array.isArray(parsed)) {
+                            parsed.forEach(d => {
+                                const num = Number(d);
+                                if (!isNaN(num) && num >= 1 && num <= 30) loadedDays.add(num);
+                            });
+                        } else if (typeof parsed === 'object' && parsed !== null) {
+                            Object.keys(parsed).forEach(k => {
+                                if (parsed[k] === true) {
+                                    const num = Number(k.replace(/\D/g, ''));
+                                    if (num >= 1 && num <= 30) loadedDays.add(num);
+                                }
+                            });
+                        }
+                    } catch(e) {
+                        // Handle plain string format if any
+                        if (legacyData.includes(',')) {
+                            legacyData.split(',').forEach(s => {
+                                const num = Number(s.trim());
+                                if (!isNaN(num) && num >= 1 && num <= 30) loadedDays.add(num);
+                            });
+                        }
+                    }
                 }
             });
-            localStorage.setItem('baqarahTracker', JSON.stringify(completedDays));
-            updateStats(completedDays.length);
-        }
 
-        function loadProgress() {
-            const saved = localStorage.getItem('baqarahTracker');
-            const completedDays = saved ? JSON.parse(saved) : [];
-            completedDays.forEach(day => {
-                const dayCard = document.getElementById(`day-${day}`);
-                if (dayCard) dayCard.classList.add('completed');
-            });
-            updateStats(completedDays.length);
-        }
+            state.completedDays = Array.from(loadedDays).sort((a, b) => a - b);
+            saveCurrentDays();
 
-        function updateStats(completedCount) {
-            completedCountEl.innerText = completedCount;
-            const progress = (completedCount / totalDays) * 100;
-            progressFillEl.style.width = `${progress}%`;
-        }
-
-        function showModal(day) {
-            if (day === totalDays) {
-                modalTitle.innerText = "🎉 مبارك الختام! 🎉";
-                modalText.innerText = "لقد أتممت قراءة سورة البقرة كاملة لمدة 30 يوماً! نسأل الله أن يتقبل منك ويجعل القرآن نوراً لحياتك.";
-            } else {
-                modalTitle.innerText = "أحسنت! 🌿";
-                modalText.innerText = messages[day - 1];
+            // Load History
+            const savedHistory = localStorage.getItem(STORAGE_KEY_HISTORY);
+            if (savedHistory) {
+                try { state.history = JSON.parse(savedHistory) || []; } catch(e) {}
             }
-            modal.classList.add('active');
+
+            // Load Reminder
+            const savedReminder = localStorage.getItem(STORAGE_KEY_REMINDER);
+            if (savedReminder) {
+                try { state.reminder = JSON.parse(savedReminder); } catch(e) {}
+            }
+        }
+
+        function saveCurrentDays() {
+            localStorage.setItem(STORAGE_KEY_CURRENT, JSON.stringify(state.completedDays));
+            // Also mirror to legacy keys so older script versions stay synced
+            localStorage.setItem('baqarah_days', JSON.stringify(state.completedDays));
+        }
+
+        function saveHistory() {
+            localStorage.setItem(STORAGE_KEY_HISTORY, JSON.stringify(state.history));
+        }
+
+        function saveReminder() {
+            localStorage.setItem(STORAGE_KEY_REMINDER, JSON.stringify(state.reminder));
+        }
+
+        // Render 30 Days Grid
+        function renderDaysGrid() {
+            const grid = document.getElementById('days-grid');
+            grid.innerHTML = '';
+
+            for (let i = 1; i <= 30; i++) {
+                const isChecked = state.completedDays.includes(i);
+                const card = document.createElement('div');
+                card.className = `day-card relative p-3 rounded-2xl border flex flex-col items-center justify-between cursor-pointer select-none transition-all ${
+                    isChecked 
+                    ? 'bg-brand-green text-white border-brand-darkGreen shadow-md' 
+                    : 'bg-white text-stone-800 border-stone-200 hover:border-brand-green/50 shadow-sm'
+                }`;
+                card.onclick = () => toggleDay(i);
+
+                card.innerHTML = `
+                    <span class="text-xs font-bold mb-1 opacity-90">اليوم</span>
+                    <span class="text-xl font-black mb-2">${i}</span>
+                    <div class="w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all ${
+                        isChecked ? 'bg-white border-white text-brand-green' : 'border-stone-300 bg-stone-50'
+                    }">
+                        ${isChecked ? '<svg class="w-4 h-4 stroke-current fill-none" viewBox="0 0 24 24" stroke-width="3"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>' : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            }
+        }
+
+        // Toggle Day State
+        function toggleDay(dayNum) {
+            const index = state.completedDays.indexOf(dayNum);
+            if (index > -1) {
+                state.completedDays.splice(index, 1);
+            } else {
+                state.completedDays.push(dayNum);
+                state.completedDays.sort((a, b) => a - b);
+            }
+
+            saveCurrentDays();
+            renderDaysGrid();
+            updateUI();
+
+            // Check if user completed 30 days
+            if (state.completedDays.length === 30) {
+                triggerCompletionModal();
+            }
+        }
+
+        // Update UI (Progress bar, text, history)
+        function updateUI() {
+            const count = state.completedDays.length;
+            document.getElementById('progress-text').innerText = `${count} / 30`;
+            const percentage = Math.round((count / 30) * 100);
+            document.getElementById('progress-bar').style.width = `${percentage}%`;
+
+            renderHistoryUI();
+        }
+
+        // Render History UI
+        function renderHistoryUI() {
+            const historyContainer = document.getElementById('history-list');
+            historyContainer.innerHTML = '';
+
+            if (state.history.length === 0) {
+                historyContainer.innerHTML = `
+                    <p class="text-xs text-stone-500 text-center py-2">لا توجد دورات مكتملة سابقة حتى الآن.</p>
+                `;
+                return;
+            }
+
+            state.history.slice().reverse().forEach((item, index) => {
+                const el = document.createElement('div');
+                el.className = "flex justify-between items-center bg-white p-3 rounded-xl border border-stone-200 shadow-sm";
+                el.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        <span class="text-brand-green text-base">🌱</span>
+                        <div>
+                            <p class="font-bold text-stone-800 text-xs">الدورة المكتملة #${state.history.length - index}</p>
+                            <p class="text-[10px] text-stone-500">${item.completionDate}</p>
+                        </div>
+                    </div>
+                    <span class="bg-brand-lightGreen text-brand-darkGreen text-[11px] font-bold px-2.5 py-1 rounded-lg">
+                        30/30 يوم
+                    </span>
+                `;
+                historyContainer.appendChild(el);
+            });
+        }
+
+        // Trigger 30-Day Completion Celebration
+        function triggerCompletionModal() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-EG', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+            document.getElementById('completion-date-text').innerText = `تاريخ الإكمال: ${dateStr}`;
+
+            // Trigger Confetti
+            if (typeof confetti === 'function') {
+                confetti({
+                    particleCount: 100,
+                    spread: 70,
+                    origin: { y: 0.6 }
+                });
+            }
+
+            const modal = document.getElementById('completion-modal');
+            const box = document.getElementById('completion-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function closeCompletionModal() {
+            const modal = document.getElementById('completion-modal');
+            const box = document.getElementById('completion-box');
+            modal.classList.add('opacity-0');
+            box.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Start New Cycle without deleting previous records
+        function startNewCycle() {
+            const now = new Date();
+            const dateStr = now.toLocaleDateString('ar-EG', { year: 'numeric', month: 'short', day: 'numeric' });
+            
+            // Add current completion to history if 30 days completed
+            if (state.completedDays.length === 30) {
+                state.history.push({
+                    id: Date.now(),
+                    completionDate: dateStr,
+                    daysCount: 30
+                });
+                saveHistory();
+            }
+
+            // Clear current days
+            state.completedDays = [];
+            saveCurrentDays();
+
+            closeCompletionModal();
+            renderDaysGrid();
+            updateUI();
+
+            showModal("تحدٍ جديد!", "تم بدء دورة جديدة بنجاح وتم حفظ دورتك السابقة في سجل الإنجازات.", "🌱");
+        }
+
+        // Manual Reset Confirmation
+        function confirmResetCurrent() {
+            if (state.completedDays.length === 0) {
+                showModal("تنبيه", "جدول الأيام فارغ بالفعل.", "ℹ️");
+                return;
+            }
+
+            showModalConfirm(
+                "إعادة بدء التحدي",
+                "هل أنتِ متأكدة من رغبتكِ في مسح الأيام المحددة في التحدي الحالي وبدء القراءة من جديد؟",
+                () => {
+                    state.completedDays = [];
+                    saveCurrentDays();
+                    renderDaysGrid();
+                    updateUI();
+                    showModal("تمت الإعادة", "تمت إعادة ضبط جدول الأيام بنجاح.", "🔄");
+                }
+            );
+        }
+
+        // Export Data to JSON File
+        function exportData() {
+            const exportPayload = {
+                app: "BaqarahTracker",
+                version: "2.0",
+                exportDate: new Date().toISOString(),
+                currentDays: state.completedDays,
+                history: state.history,
+                reminder: state.reminder
+            };
+
+            const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(exportPayload, null, 2));
+            const downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", `ورد_سورة_البقرة_نسخة_احتياطية_${new Date().toISOString().slice(0,10)}.json`);
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        // Import Data from JSON File
+        function importData(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const imported = JSON.parse(e.target.result);
+
+                    if (!imported || (imported.app !== "BaqarahTracker" && !imported.currentDays && !imported.completedDays)) {
+                        throw new Error("تنسيق الملف غير صحيح.");
+                    }
+
+                    // Restore days safely
+                    const daysToRestore = imported.currentDays || imported.completedDays || [];
+                    if (Array.isArray(daysToRestore)) {
+                        state.completedDays = daysToRestore.filter(n => typeof n === 'number' && n >= 1 && n <= 30);
+                        saveCurrentDays();
+                    }
+
+                    // Restore history
+                    if (Array.isArray(imported.history)) {
+                        state.history = imported.history;
+                        saveHistory();
+                    }
+
+                    // Restore reminder settings
+                    if (imported.reminder && typeof imported.reminder.time === 'string') {
+                        state.reminder = imported.reminder;
+                        saveReminder();
+                        initReminder();
+                    }
+
+                    renderDaysGrid();
+                    updateUI();
+                    showModal("نجاح الاستيراد", "تم استعادة بياناتكِ بنجاح وتحديث الجدول والسجل.", "✅");
+
+                } catch (err) {
+                    showModal("خطأ في الاستيراد", "تعذر قراءة الملف. تأكدي من اختيار ملف نسخة احتياطية صحيح صيغته JSON.", "⚠️");
+                }
+                event.target.value = ''; // Reset file input
+            };
+            reader.readAsText(file);
+        }
+
+        // Setup & Trigger Notifications
+        function setupNotifications() {
+            const timeInput = document.getElementById('reminder-time');
+            if (state.reminder.time) {
+                timeInput.value = state.reminder.time;
+            }
+            updateReminderButtonUI();
+        }
+
+        function initReminder() {
+            if (reminderInterval) clearInterval(reminderInterval);
+
+            // Check every 30 seconds
+            reminderInterval = setInterval(() => {
+                if (!state.reminder.enabled) return;
+
+                const now = new Date();
+                const currentStr = `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')}`;
+                
+                if (currentStr === state.reminder.time && now.getSeconds() < 30) {
+                    sendNotification();
+                }
+            }, 30000);
+        }
+
+        async function toggleReminder() {
+            const timeInput = document.getElementById('reminder-time');
+            state.reminder.time = timeInput.value;
+
+            if (!state.reminder.enabled) {
+                // User wants to enable
+                if ("Notification" in window) {
+                    const permission = await Notification.requestPermission();
+                    if (permission === "granted") {
+                        state.reminder.enabled = true;
+                        saveReminder();
+                        updateReminderButtonUI();
+                        showModal("تم تفعيل التذكير", `سيتم تذكيركِ يومياً الساعة ${state.reminder.time}. (تأكدي من ترك المتصفح مفتوحاً في الخلفية)`, "🔔");
+                    } else {
+                        showModal("المرجو منح الإذن", "يجب الموافقة على إذن الإشعارات من المتصفح لتفعيل التذكيرات.", "⚠️");
+                    }
+                } else {
+                    state.reminder.enabled = true;
+                    saveReminder();
+                    updateReminderButtonUI();
+                    showModal("تنبيه", "المتصفح لا يدعم Notification API بشكل كامل، ولكنه سيعمل عند فتح الصفحة.", "ℹ️");
+                }
+            } else {
+                // Disable
+                state.reminder.enabled = false;
+                saveReminder();
+                updateReminderButtonUI();
+                showModal("تم الإيقاف", "تم إيقاف التذكير اليومي.", "🔕");
+            }
+        }
+
+        function updateReminderButtonUI() {
+            const btn = document.getElementById('toggle-reminder-btn');
+            if (state.reminder.enabled) {
+                btn.innerText = "مفعّل ✓";
+                btn.className = "bg-emerald-700 hover:bg-emerald-800 text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all active:scale-95";
+            } else {
+                btn.innerText = "تفعيل";
+                btn.className = "bg-brand-green hover:bg-brand-darkGreen text-white font-bold px-5 py-2.5 rounded-xl shadow-md transition-all active:scale-95";
+            }
+        }
+
+        function sendNotification() {
+            if ("Notification" in window && Notification.permission === "granted") {
+                new Notification("وِردي اليومي – سورة البقرة 📖", {
+                    body: "حان الآن موعد قراءة وِردكِ اليومي من سورة البقرة.",
+                    icon: "https://cdn-icons-png.flaticon.com/512/3389/3389081.png"
+                });
+            }
+        }
+
+        // Custom Modal Utility
+        function showModal(title, message, icon = "✨") {
+            document.getElementById('modal-icon').innerText = icon;
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerText = message;
+            
+            const actions = document.getElementById('modal-actions');
+            actions.innerHTML = `
+                <button onclick="closeModal()" class="bg-brand-green text-white font-bold px-6 py-2.5 rounded-xl shadow hover:bg-brand-darkGreen transition-all w-full">
+                    حسناً
+                </button>
+            `;
+
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('modal-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+            }, 10);
+        }
+
+        function showModalConfirm(title, message, onConfirm) {
+            document.getElementById('modal-icon').innerText = "❓";
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-body').innerText = message;
+
+            const actions = document.getElementById('modal-actions');
+            actions.innerHTML = `
+                <button id="modal-confirm-btn" class="bg-red-600 text-white font-bold px-4 py-2.5 rounded-xl shadow hover:bg-red-700 transition-all flex-1">
+                    تأكيد
+                </button>
+                <button onclick="closeModal()" class="bg-stone-200 text-stone-700 font-bold px-4 py-2.5 rounded-xl transition-all flex-1">
+                    إلغاء
+                </button>
+            `;
+
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('modal-box');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                box.classList.remove('scale-95');
+            }, 10);
+
+            document.getElementById('modal-confirm-btn').onclick = () => {
+                closeModal();
+                onConfirm();
+            };
         }
 
         function closeModal() {
-            modal.classList.remove('active');
+            const modal = document.getElementById('custom-modal');
+            const box = document.getElementById('modal-box');
+            modal.classList.add('opacity-0');
+            box.classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
         }
-
-        function resetChallenge() {
-            if (confirm("هل أنت متأكد أنك تريد إعادة بدء التحدي ومسح جميع العلامات؟")) {
-                localStorage.removeItem('baqarahTracker');
-                createDays();
-            }
-        }
-
-        function setupReminder() {
-            const time = document.getElementById('reminder-time').value;
-            if (!time) {
-                alert("يرجى اختيار وقت أولاً.");
-                return;
-            }
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert(`تم تفعيل التذكير اليومي في الساعة ${time}.`);
-                    } else if (permission === 'denied') {
-                        alert("تم رفض إذن الإشعارات. يرجى تفعيلها من إعدادات المتصفح في هاتفك.");
-                    }
-                });
-            } else {
-                alert("المتصفح لا يدعم الإشعارات.");
-            }
-        }
-
-        window.onload = createDays;
-    </script>
-
-    <!-- تسجيل الـ Service Worker لـ PWA -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
-                self.addEventListener('install', (e) => {
-                    e.waitUntil(
-                        caches.open('baqarah-v1').then((cache) => {
-                            return cache.addAll(['/']);
-                        })
-                    );
-                });
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(
-                        caches.match(e.request).then((response) => {
-                            return response || fetch(e.request);
-                        })
-                    );
-                });
-            `), { scope: '/' });
-        }
-    </script>
-
-    <!-- ملف manifest.json مضمن -->
-    <script type="application/json" id="manifest" style="display:none">
-    {
-      "name": "وِردي اليومي – سورة البقرة",
-      "short_name": "وِردي البقرة",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        },
-        {
-          "src": "icon-512.png",
-          "sizes": "512x512",
-          "type": "image/png"
-        }
-      ],
-      "start_url": "./",
-      "display": "fullscreen",
-      "background_color": "#fefae0",
-      "theme_color": "#3a5a40"
-    }
-    </script>
-    <script>
-        // تحميل المانيفست ديناميكياً
-        const manifestString = document.getElementById('manifest').innerHTML;
-        const blob = new Blob([manifestString], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blob);
-        document.querySelector('#manifest').remove();
-        document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestURL}">`);
     </script>
 </body>
 </html>
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>وِردي اليومي – سورة البقرة</title>
-    <meta name="theme-color" content="#3a5a40">
-    <link rel="manifest" href="manifest.json">
-    <link rel="apple-touch-icon" href="icon-192.png">
-    <style>
-        :root {
-            --primary: #3a5a40;
-            --secondary: #a3b18b;
-            --bg-light: #fefae0;
-            --text-dark: #344e41;
-            --accent: #d4af37;
-            --font-family: 'Cairo', 'Amiri', sans-serif;
-        }
-
-        body {
-            background-color: var(--bg-light);
-            color: var(--text-dark);
-            font-family: var(--font-family);
-            margin: 0;
-            padding: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-            padding-bottom: 20px;
-        }
-
-        header {
-            background-color: var(--primary);
-            color: white;
-            width: 100%;
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            border-bottom-left-radius: 20px;
-            border-bottom-right-radius: 20px;
-        }
-
-        h1 {
-            margin: 0;
-            font-size: 1.8rem;
-        }
-
-        .container {
-            width: 90%;
-            max-width: 500px;
-            margin-top: 20px;
-        }
-
-        .stats {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .progress-bar {
-            background: #e0e0e0;
-            border-radius: 10px;
-            height: 15px;
-            width: 60%;
-            overflow: hidden;
-        }
-
-        .progress-fill {
-            background: var(--primary);
-            height: 100%;
-            width: 0%;
-            transition: width 0.5s ease-in-out;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 15px;
-        }
-
-        .day-card {
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: all 0.3s ease;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .day-card.completed {
-            background-color: var(--secondary);
-            color: white;
-        }
-
-        .day-card.completed .day-number, 
-        .day-card.completed .checkbox {
-            color: white;
-        }
-
-        .day-number {
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .checkbox {
-            width: 25px;
-            height: 25px;
-            border: 2px solid var(--primary);
-            border-radius: 5px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            cursor: pointer;
-            transition: all 0.2s;
-            background: white;
-        }
-
-        .checkbox::after {
-            content: '✓';
-            color: var(--primary);
-            display: none;
-        }
-
-        .day-card.completed .checkbox::after {
-            display: block;
-        }
-        
-        .day-card.completed .checkbox {
-            border-color: white;
-        }
-
-        .notification-settings {
-            margin-top: 20px;
-            background: white;
-            padding: 15px;
-            border-radius: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            width: 100%;
-            text-align: center;
-            box-sizing: border-box;
-        }
-
-        .btn {
-            background-color: var(--accent);
-            color: var(--text-dark);
-            border: none;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            transition: all 0.2s;
-            width: 100%;
-        }
-        
-        .btn-reset {
-            background-color: #d90429;
-            color: white;
-            width: 100%;
-        }
-
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .modal.active {
-            display: flex;
-            opacity: 1;
-        }
-
-        .modal-content {
-            background: white;
-            padding: 25px;
-            border-radius: 20px;
-            width: 80%;
-            max-width: 300px;
-            text-align: center;
-            transform: scale(0.8);
-            transition: transform 0.3s;
-        }
-
-        .modal.active .modal-content {
-            transform: scale(1);
-        }
-
-        .close-modal {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 25px;
-            border-radius: 10px;
-            margin-top: 15px;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .time-picker {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            margin-top: 10px;
-            align-items: center;
-        }
-        input, select {
-            border: 1px solid var(--secondary);
-            border-radius: 5px;
-            padding: 5px;
-            font-family: var(--font-family);
-        }
-
-    </style>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
-</head>
-<body>
-
-    <header>
-        <h1>وِردي اليومي – سورة البقرة</h1>
-    </header>
-
-    <div class="container">
-        <div class="stats">
-            <div>
-                <span>المكتمل: <span id="completed-count">0</span> / 30</span>
-            </div>
-            <div class="progress-bar">
-                <div class="progress-fill" id="progress-fill"></div>
-            </div>
-        </div>
-
-        <div class="grid" id="days-grid">
-            <!-- سيتم إنشاء الأيام هنا بواسطة JavaScript -->
-        </div>
-
-        <div class="notification-settings" dir="rtl">
-            <label for="reminder-time">⏰ ضبط التذكير اليومي:</label>
-            <div class="time-picker">
-                <input type="time" id="reminder-time" value="20:00">
-                <button class="btn" style="width: auto; margin-top:0;" onclick="setupReminder()">تفعيل</button>
-            </div>
-            <p style="font-size: 0.8rem; color: #666; margin-top:10px;">(قد تحتاج إلى منح إذن للإشعارات على هاتفك)</p>
-        </div>
-
-        <button class="btn btn-reset" style="margin-top: 20px" onclick="resetChallenge()">🔄 إعادة بدء التحدي</button>
-    </div>
-
-    <div class="modal" id="message-modal">
-        <div class="modal-content">
-            <h2 id="modal-title">تهانينا!</h2>
-            <p id="modal-text">رسالة تشجيعية هنا</p>
-            <button class="close-modal" onclick="closeModal()">حسناً</button>
-        </div>
-    </div>
-
-    <script>
-        const totalDays = 30;
-        const daysGrid = document.getElementById('days-grid');
-        const completedCountEl = document.getElementById('completed-count');
-        const progressFillEl = document.getElementById('progress-fill');
-        const modal = document.getElementById('message-modal');
-        const modalTitle = document.getElementById('modal-title');
-        const modalText = document.getElementById('modal-text');
-
-        const messages = [
-            'ما شاء الله! خطوة مباركة نحو النور. استمر.',
-            'بارك الله فيك! وردك اليومي يرفع همتك.',
-            'رائع! اقتربت خطوة جديدة من الختمة.',
-            'يا بطل! واصل ولا تنقطع، القرآن ربيع قلبك.',
-            'ممتاز! استشعر عظمة ما تقرأ اليوم.',
-            'أحسنت! خطواتك في سورة البقرة تضيء حياتك.',
-            'نور على نور! يوم إضافي وبداية جديدة.',
-            'ما أجمل التزامك! الله يتقبل منك.',
-            'همة عالية! لا تتوقف فالأجر عظيم.',
-            'استمر يا بطل! البقرة بركة في الرزق والوقت.',
-            'تبارك الله! قارئ القرآن في عليين.',
-            'عمل عظيم! أتممت اليوم، فافرح بإنجازك.',
-            'شكر الله سعيك! تذكر أن لكل حرف حسنة.',
-            'بداية قوية ليوم جديد! واصل المسير.',
-            'نصف الطريق تقريباً! أنت في حفظ الله.',
-            'إنجاز رائع! داوم على هذا النور.',
-            'عزيمة لا تلين! استمر في قراءة الوِرد.',
-            'زادك الله نوراً! وفقك الله لكل خير.',
-            'أنت رائع! كل يوم يمر يقربك من هدفك.',
-            'ما شاء الله! استمر في جني الحسنات.',
-            'خطوات مباركة! طهر قلبك بالقرآن.',
-            'همة المؤمن لا تفتر! أحسنت اليوم.',
-            'البقرة فسطاط القرآن! واصل الالتزام.',
-            'وفقك الله! كل يوم تقرأه هو كنز لك.',
-            'أوشكت على النهاية! استعد للنصر.',
-            'قارب التحدي على الانتهاء! استمر.',
-            'فخور بالتزامك! واصل حتى الختام.',
-            'أيام قليلة وتختم التحدي! ثابر.',
-            'ما أروع إنجازك! يوم واحد يفصلك.',
-            'مبارك! أتممت الختمة بفضل الله وتوفيقه!'
-        ];
-
-        function createDays() {
-            daysGrid.innerHTML = '';
-            for (let i = 1; i <= totalDays; i++) {
-                const dayCard = document.createElement('div');
-                dayCard.classList.add('day-card');
-                dayCard.id = `day-${i}`;
-                dayCard.innerHTML = `
-                    <div class="day-number">اليوم ${i}</div>
-                    <div class="checkbox" onclick="toggleDay(${i})"></div>
-                `;
-                daysGrid.appendChild(dayCard);
-            }
-            loadProgress();
-        }
-
-        function toggleDay(day) {
-            const dayCard = document.getElementById(`day-${day}`);
-            dayCard.classList.toggle('completed');
-            saveProgress();
-
-            if (dayCard.classList.contains('completed')) {
-                showModal(day);
-            }
-        }
-
-        function saveProgress() {
-            const completedDays = [];
-            document.querySelectorAll('.day-card').forEach((card, index) => {
-                if (card.classList.contains('completed')) {
-                    completedDays.push(index + 1);
-                }
-            });
-            localStorage.setItem('baqarahTracker', JSON.stringify(completedDays));
-            updateStats(completedDays.length);
-        }
-
-        function loadProgress() {
-            const saved = localStorage.getItem('baqarahTracker');
-            const completedDays = saved ? JSON.parse(saved) : [];
-            completedDays.forEach(day => {
-                const dayCard = document.getElementById(`day-${day}`);
-                if (dayCard) dayCard.classList.add('completed');
-            });
-            updateStats(completedDays.length);
-        }
-
-        function updateStats(completedCount) {
-            completedCountEl.innerText = completedCount;
-            const progress = (completedCount / totalDays) * 100;
-            progressFillEl.style.width = `${progress}%`;
-        }
-
-        function showModal(day) {
-            if (day === totalDays) {
-                modalTitle.innerText = "🎉 مبارك الختام! 🎉";
-                modalText.innerText = "لقد أتممت قراءة سورة البقرة كاملة لمدة 30 يوماً! نسأل الله أن يتقبل منك ويجعل القرآن نوراً لحياتك.";
-            } else {
-                modalTitle.innerText = "أحسنت! 🌿";
-                modalText.innerText = messages[day - 1];
-            }
-            modal.classList.add('active');
-        }
-
-        function closeModal() {
-            modal.classList.remove('active');
-        }
-
-        function resetChallenge() {
-            if (confirm("هل أنت متأكد أنك تريد إعادة بدء التحدي ومسح جميع العلامات؟")) {
-                localStorage.removeItem('baqarahTracker');
-                createDays();
-            }
-        }
-
-        function setupReminder() {
-            const time = document.getElementById('reminder-time').value;
-            if (!time) {
-                alert("يرجى اختيار وقت أولاً.");
-                return;
-            }
-            if ("Notification" in window) {
-                Notification.requestPermission().then(permission => {
-                    if (permission === "granted") {
-                        alert(`تم تفعيل التذكير اليومي في الساعة ${time}.`);
-                    } else if (permission === 'denied') {
-                        alert("تم رفض إذن الإشعارات. يرجى تفعيلها من إعدادات المتصفح في هاتفك.");
-                    }
-                });
-            } else {
-                alert("المتصفح لا يدعم الإشعارات.");
-            }
-        }
-
-        window.onload = createDays;
-    </script>
-
-    <!-- تسجيل الـ Service Worker لـ PWA -->
-    <script>
-        if ('serviceWorker' in navigator) {
-            navigator.serviceWorker.register('data:text/javascript,' + encodeURIComponent(`
-                self.addEventListener('install', (e) => {
-                    e.waitUntil(
-                        caches.open('baqarah-v1').then((cache) => {
-                            return cache.addAll(['/']);
-                        })
-                    );
-                });
-                self.addEventListener('fetch', (e) => {
-                    e.respondWith(
-                        caches.match(e.request).then((response) => {
-                            return response || fetch(e.request);
-                        })
-                    );
-                });
-            `), { scope: '/' });
-        }
-    </script>
-
-    <!-- ملف manifest.json مضمن -->
-    <script type="application/json" id="manifest" style="display:none">
-    {
-      "name": "وِردي اليومي – سورة البقرة",
-      "short_name": "وِردي البقرة",
-      "icons": [
-        {
-          "src": "icon-192.png",
-          "sizes": "192x192",
-          "type": "image/png"
-        },
-        {
-          "src": "icon-512.png",
-          "sizes": "512x512",
-          "type": "image/png"
-        }
-      ],
-      "start_url": "./",
-      "display": "fullscreen",
-      "background_color": "#fefae0",
-      "theme_color": "#3a5a40"
-    }
-    </script>
-    <script>
-        // تحميل المانيفست ديناميكياً
-        const manifestString = document.getElementById('manifest').innerHTML;
-        const blob = new Blob([manifestString], {type: 'application/json'});
-        const manifestURL = URL.createObjectURL(blob);
-        document.querySelector('#manifest').remove();
-        document.head.insertAdjacentHTML('beforeend', `<link rel="manifest" href="${manifestURL}">`);
-    </script>
-</body>
-</html>
+```
